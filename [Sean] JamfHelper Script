@@ -1,0 +1,25 @@
+#!/bin/bash
+# This script will call the jamfHelper to prompt a user to restart their computer. The Parameters will be set in the Policy.
+#Set Parameter 4 to "Window Type" Note: Your choices include utility, hud or fs
+windowType="$4"
+#Set Parameter 5 to "Logo". Note: This can be BASE64, a Local File or a URL. If a URL the file needs to curl down prior to jamfHelper
+icon="$5"
+#Set Parameter 6 to "Window Title"
+title="$6"
+#Set Parameter 7 to "Window Heading"
+heading="$7"
+#Set Parameter 8 to "Window Message"
+description="$8"
+#Set Parameter 9 to "Button1"
+button1="$9"
+#Set Parameter 10 to "Button2"
+#Note: Double digit Parameters should be enclosed with {}
+button2="${10}"
+#Set the default button. Your choices are 1 or 2. Note: Default and Cancel buttonslet the user press the "Return" key or "Escape" key
+#Note: Double digit Parameters should be enclosed with {}
+defaultButton="${11}"
+# This will set a variable for the jamfHelper
+jamfHelper="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
+#This will set a variable for jamfHelper to do an action...
+userChoice=$("$jamfHelper" -windowType "$windowType" -icon "$icon" -title "$title" -heading "$heading" -description "$description" -button1 "$button1" -button2 "$button2" -defaultButton 1 -cancelButton 2) 
+exit 0
