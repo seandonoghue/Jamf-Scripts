@@ -1,0 +1,14 @@
+#!/bin/bash
+
+cat << 'EOF' > /usr/local/outset/login-privileged-once/admin.sh
+#!/bin/bash
+FAKE_USER=$(/bin/echo "show State:/Users/ConsoleUser" | /usr/sbin/scutil | /usr/bin/awk '/Name :/&&!/loginwindow/{print $3}')
+CURRENT_USER=$(id -un $FAKE_USER)
+sudo dscl / -append /Groups/admin GroupMembership $CURRENT_USER
+exit 0
+EOF
+
+if [ -e /usr/local/outset/login-privileged-once/admin.sh ]; then
+    /bin/chmod +x /usr/local/outset/login-privileged-once/admin.sh
+fi
+exit 0
