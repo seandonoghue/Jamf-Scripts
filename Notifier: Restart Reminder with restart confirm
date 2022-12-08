@@ -1,0 +1,69 @@
+#!/bin/bash
+
+if [ -d "/Applications/Utilities/Airtable Notifier.app" ]; then
+    echo "Already Installed"
+else
+    echo "Not Installed. Installing now…"
+	/usr/local/jamf/bin/jamf policy -event note
+fi
+
+
+# IBM Notifier binary paths
+NA_PATH="/Applications/Utilities/Airtable Notifier.app/Contents/MacOS/Airtable Notifier"
+
+# Variables for the popup notification for ease of customization
+WINDOWTYPE="banner"
+TITLE="A friendly reminder from IT"
+BUTTON_1="Restart Now"
+SUBTITLE="Your Mac has not been restarted in over 14 days. Please save your work and physically press the power button on your Mac to reboot at your earliest convenience."
+
+### FUNCTIONS ###
+
+prompt_user() {
+    # This will call the IBM Notifier Agent
+    # USAGE: prompt_user "1" for two buttons, otherwise just the function for one
+    if [[ "${#1}" -ge 1 ]]; then
+        sec_button=("-secondary_button_label" "${BUTTON_2}")
+    fi
+
+    button=$("${NA_PATH}" \
+        -type "${WINDOWTYPE}" \
+        -title "${TITLE}" \
+        -subtitle "${SUBTITLE}" \
+        -main_button_label "${BUTTON_1}" \
+        "${sec_button[@]}")
+
+    echo "$?"
+}
+
+### END FUNCTIONS ###
+
+# Example 1 button prompt
+RESPONSE=$(prompt_user)
+if [ "$RESPONSE" == "0" ]; then
+    	jamfHelper="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
+		windowType="hud"
+		description="Restart your Mac?"
+		button1="Yes"
+		button2="No"
+		icon="/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns"
+		title="Restart"
+		alignDescription="left"
+		alignHeading="center"
+		defaultButton="1"
+		cancelButton="2"
+		userChoice=$("$jamfHelper" -windowType "$windowType" -lockHUD -title "$title" -defaultButton "$defaultButton" -cancelButton "$cancelButton" -icon "$icon" -description "$description" -alignDescription "$alignDescription" -alignHeading "$alignHeading" -button1 "$button1" -button2 "$button2")
+
+	if [ "$userChoice" == "0" ]; then
+    	echo "User clicked Yes; now restarting."
+    		shutdown -r now
+	elif [ "$userChoice" == "2" ]; then
+    	echo "User clicked Cancel; now exiting."
+    exit 0
+	fi
+else
+    echo "User closed the notification, no restart occured."
+fi
+echo "$RESPONSE"
+
+exit 0
