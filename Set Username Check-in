@@ -1,0 +1,9 @@
+#!/bin/zsh
+# Created by Kyle Ericson
+currentuser=$(dscl . list /Users | grep -v '_' | grep -v 'itadmin' | grep -v 'airtableadmin' | grep -v 'daemon' | grep -v 'nobody' | grep -v 'Guest' | grep -v 'airtable' | grep -v 'airtableit' | grep -v 'root')
+UN=$(id -F "$currentuser")
+X="@airtable.com"
+USRN=$UN$X
+echo "Setting username: $USRN "
+/usr/local/bin/jamf recon -endUsername $UN            
+exit 0
