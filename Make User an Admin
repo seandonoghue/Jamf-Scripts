@@ -1,0 +1,6 @@
+#!/bin/sh
+
+U=`who |grep console| awk '{print $1}'`
+
+# give current logged user admin rights
+/usr/sbin/dseditgroup -o edit -a $U -t user admin
