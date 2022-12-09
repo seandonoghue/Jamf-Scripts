@@ -1,0 +1,9 @@
+#!/bin/zsh
+# Get the current logged in user and the user's ID
+currentUserAlias=$(scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ && ! /loginwindow/ { print $3 }')
+echo $currentUserAlias
+loggedInUser=$(id -un $currentUserAlias)
+UN=$(defaults read /Users/$loggedInUser/Library/Preferences/com.jamf.connect.state.plist DisplayName)
+echo "Setting username to: $UN"
+/usr/local/bin/jamf recon -endUsername $UN
+exit 0
