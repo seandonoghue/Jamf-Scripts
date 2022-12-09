@@ -1,0 +1,8 @@
+#!/bin/bash
+
+loggedInUser=$( echo "show State:/Users/ConsoleUser" | scutil | awk '/Name :/ && ! /loginwindow/ { print $3 }' )
+
+/bin/chmod +x /usr/local/bin/restart.sh
+
+sudo -u "$loggedInUser" python /usr/local/bin/yo_scheduler.py -t "A friendly reminder from IT" -n "Your Mac has not been restart in over 14 days. Most issues can be fixed by a simple restart. Please restart your Mac at your earliest convenience." -b 'Restart' -a "/usr/local/Reboot.app"
+exit 0
