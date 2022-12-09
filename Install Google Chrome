@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+curl --retry 3 -L "https://dl.google.com/dl/chrome/mac/universal/stable/gcem/GoogleChrome.pkg" -o "/tmp/GoogleChrome.pkg"
+/usr/sbin/installer -pkg /tmp/GoogleChrome.pkg -target /
+
+exit 0
