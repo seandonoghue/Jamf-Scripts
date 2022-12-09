@@ -1,0 +1,34 @@
+#!/bin/bash
+
+cat << 'EOF' > /usr/local/outset/login-once/dockdesk.sh
+#!/bin/bash
+
+echo "running dockutil"
+DOCKUTIL=/usr/local/bin/dockutil
+
+$DOCKUTIL --remove all --no-restart --allhomes
+
+apps=(
+"/Applications/Airtable.app"
+"/Applications/Airtable IT Self Service.app"
+"/Applications/Slack.app"
+"/Applications/Google Chrome.app"
+"/Applications/Zoom.us.app"
+"/Applications/1Password 7.app"
+
+
+)
+for app in "${apps[@]}"; do
+$DOCKUTIL --add "$app" --no-restart --allhomes
+done
+
+/usr/local/bin/desktoppr /Library/Resources/welcome.png
+
+killall Dock
+exit 0
+EOF
+
+if [ -e /usr/local/outset/login-once/dockdesk.sh ]; then
+    /bin/chmod +x /usr/local/outset/login-once/dockdesk.sh
+fi
+exit 0
