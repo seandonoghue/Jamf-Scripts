@@ -1,0 +1,8 @@
+#!/bin/zsh
+
+/usr/bin/curl --retry 3 -L https://slack.com/ssb/download-osx -o /tmp/Slack.dmg
+hdiutil attach /tmp/Slack.dmg -nobrowse
+cp -R /Volumes/Slack.app/Slack.app /Applications
+hdiutil unmount /Volumes/Slack.app
+
+exit 0
