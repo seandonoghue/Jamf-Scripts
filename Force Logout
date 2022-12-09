@@ -1,0 +1,4 @@
+#!/bin/bash
+#Created by Kyle Ericson
+pkill loginwindow
+exit 0
