@@ -1,0 +1,58 @@
+Some things to think about. Here’s the result of your uninstall policy:
+it doesn’t uninstall the app or the LaunchDaemon
+I tried testing just the pkg that uninstalls the LaunchDaemon. Nope. Doesn’t uninstall.
+
+That’s because the LaunchDaemon installer likely doesn’t have an uninstaller built in. Simply adding a .pkg to a policy and selecting “Uninstall” from the policy options screen doesn’t work, sadly. The installer (unless I’m sorely mistaken and the screenshot above seems to indicate that I’m not) has to support the uninstall process.
+
+So now we have an app (which, btw, despite showing up as “Zoom Rooms” in /Applications, is actually not named “Zoom Rooms”, it’s called ZoomPresence.
+ 
+Screenshot 2022-12-17 at 4.16.35 AM.png
+4:17
+this app needs to be deleted (but only if detected, otherwise the script will error out), then the LaunchDaemon needs to be unloaded, then disabled, then deleted (but again, only if detected).
+4:18
+and in all of this, we need to have some messages hitting the logs in Jamf.
+
+
+Sohail Mamdani
+:no_entry:  4:33 AM
+#!/bin/bash 
+
+# Function to unload and disable the daemon.
+
+disableIfRunning () {
+    echo "Zoom Rooms LaunchDaemon is running; unloading and disabling will continue."
+    launchctl unload /Library/LaunchDaemons/us.zoom.rooms.daemon.plist
+    launchctl disable system/us.zoom.rooms.daemon
+    rm /Library/LaunchDaemons/us.zoom.rooms.daemon.plist
+    rm -rf /Applications/Zoom\ Rooms.app
+}
+
+# Function to remove the Zoom app
+
+removeZoomApp () {
+    echo "Zoom Room app found, deleting"
+    rm -rf /Applications/ZoomPresence.app
+}
+
+# Bring the ACTION
+
+# Declare the variable "isLaunchDaemonRunning" to be equal to the value of the "launchctl list" command's output being searched for the string "us.zoom.rooms.daemon"
+isLaunchDaemonRunning=`launchctl list | grep us.zoom.rooms.daemon`
+
+# Check to see if the daemon is running. First "IF" statement says that if the above search is blank, echo out a statement and exit. If it's got the LaunchDaemon running, then execute the function disableIfRunning. Easy as pie.
+if [[ -z $isLaunchDaemonRunning ]]; then
+echo "Zoom Rooms LaunchDaemon is Not Running"
+else
+disableIfRunning
+fi
+
+# Check to see if the Zoom app is installed; remove it if it is, echo and ignore if it's not.
+
+if [[ -d /Applications/ZoomPresence.app ]]; then
+removeZoomApp
+else
+echo "App Not found, exiting"
+fi 
+4:34
+Going to bed. Will likely need help testing this tomorrow if you’re available.
+
